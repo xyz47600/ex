@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+
+  
+  
+
+  
+  
+  
+
+  
+
+  <script type="text/javascript" src="/js/lib/dummy.js"></script>
+
+  
+
+  
+    <link rel="stylesheet" type="text/css" href="/css/normalize.css">
+  
+
+  
+
+  
+    <link rel="stylesheet" type="text/css" href="/css/result-light.css">
+  
+
+  
+
+  <style type="text/css">
+    #info {
+  position: absolute;
+  top: 0px;
+  width: 100%;
+  padding: 10px;
+  text-align: center;
+  color: #ffff00
+}
+
+body {
+  overflow: hidden;
+}
+
+  </style>
+
+  <title>HW1 by xyz47600</title>
+
+  
+    
+
+
+
+
+<script type='text/javascript'>//<![CDATA[
+window.onload=function(){
+var camera, scene, renderer, geometry, material, mesh, light, controls;
+var keyboard = new KeyboardState();
+var turn = true;
+var angle = 0;
+var pos, vel, force;
+var mass = 1;
+var brakeOn = false;
+var engineOn = false;
+var turnangle = 0;
+var speed = 0;
+var clock = new THREE.Clock();
+var car = new THREE.Object3D();
+
+init();
+animate();
+
+function init() {
+  scene = new THREE.Scene();
+
+  camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 5000);
+  camera.position.set(0, 1000, 0);
+  scene.add(camera);
+
+  var Tri1 = new THREE.Geometry();
+  Tri1.vertices.push(
+    new THREE.Vector3(0, 0, -10),
+    new THREE.Vector3(0, 0, 10),
+    new THREE.Vector3(0, 10, 0)
+  );
+  Tri1.faces.push(new THREE.Face3(0, 1, 2));
+  Tri1.computeBoundingSphere();
+  Tri1.computeFaceNormals();
+  Tri1.computeVertexNormals();
+  var Trimesh1 = new THREE.Mesh(Tri1, new THREE.MeshNormalMaterial({
+    side: THREE.DoubleSide
+  }));
+
+  var Tri2 = new THREE.Geometry();
+  Tri2.vertices.push(
+    new THREE.Vector3(30, 0, 0),
+    new THREE.Vector3(0, 0, -10),
+    new THREE.Vector3(0, 10, 0)
+  );
+  Tri2.faces.push(new THREE.Face3(0, 1, 2));
+  Tri2.computeBoundingSphere();
+  Tri2.computeFaceNormals();
+  Tri2.computeVertexNormals();
+  var Trimesh2 = new THREE.Mesh(Tri2, new THREE.MeshNormalMaterial({
+    side: THREE.DoubleSide
+  }));
+
+  var Tri3 = new THREE.Geometry();
+  Tri3.vertices.push(
+    new THREE.Vector3(30, 0, 0),
+    new THREE.Vector3(0, 0, 10),
+    new THREE.Vector3(0, 10, 0)
+  );
+  Tri3.faces.push(new THREE.Face3(0, 1, 2));
+  Tri3.computeBoundingSphere();
+  Tri3.computeFaceNormals();
+  Tri3.computeVertexNormals();
+  var Trimesh3 = new THREE.Mesh(Tri3, new THREE.MeshNormalMaterial({
+    side: THREE.DoubleSide
+  }));
+
+  car.add(Trimesh1);
+  car.add(Trimesh2);
+  car.add(Trimesh3);
+  scene.add(car);
+
+  var gridXZ = new THREE.GridHelper(500, 50);
+  gridXZ.setColors(new THREE.Color(0xff0000), new THREE.Color(0xffffff));
+  scene.add(gridXZ);
+
+  renderer = new THREE.WebGLRenderer();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setClearColor(0x888888);
+
+  controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+  pos = new THREE.Vector3();
+  vel = new THREE.Vector3();
+  force = new THREE.Vector3();
+
+  document.body.appendChild(renderer.domElement);
+}
+
+function computeForce() {
+
+  if (!brakeOn) {
+    force = new THREE.Vector3(10, 0, 0).applyAxisAngle(new THREE.Vector3(0, 1, 0), angle - turnangle).multiplyScalar(speed);
+  } else force = new THREE.Vector3(0, 0, 0);
+
+
+  var alpha = 2.050;
+  force.add(vel.clone().multiplyScalar(-alpha));
+}
+
+function animate() {
+  controls.update();
+  keyboard.update();
+
+  computeForce();
+  var dt = clock.getDelta();
+  vel.add(force.clone().multiplyScalar(dt / mass));
+  pos.add(vel.clone().multiplyScalar(dt));
+
+  if (vel.length() > 0.001) {
+    angle = Math.atan2(-vel.z, vel.x);
+  }
+
+  car.position.copy(pos);
+  car.rotation.y = angle;
+
+  if (!engineOn) {
+    if (keyboard.down("home")) engineOn = true;
+  } else {
+    if (keyboard.down("home")) engineOn = false;
+  }
+
+  if (engineOn) {
+    if (keyboard.pressed("W")) {
+      if (speed <= 30) speed = speed + dt * 50;
+    }
+    if (keyboard.pressed("S")) {
+      if (speed >= 1) {
+        speed = speed - dt * 50;
+      }
+      if (speed < 1) speed = 0;
+    }
+    if (keyboard.pressed("A")) turnangle = -0.6;
+    if (keyboard.up("A")) turnangle = 0;
+    if (keyboard.pressed("D")) turnangle = 0.6;
+    if (keyboard.up("D")) turnangle = 0;
+    if (keyboard.pressed("space")) {
+      brakeOn = true;
+      speed = 0;
+    }
+    if (keyboard.up("space")) brakeOn = false;
+  }
+
+  requestAnimationFrame(animate);
+  render();
+}
+
+function render() {
+  renderer.render(scene, camera);
+}
+
+// important to add this 
+// in jsfiddle!
+window.focus();
+
+}//]]> 
+
+</script>
+
+  
+</head>
+
+<body>
+  <div id="info">HW1
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r70/three.min.js"></script>
+<script src="https://dl.dropboxusercontent.com/u/3587259/Code/Threejs/OrbitControls.js">
+
+
+</script>
+<script src="https://jyunming-chen.github.io/tutsplus/js/KeyboardState.js"></script>
+
+  
+</body>
+
+</html>
+
