@@ -173,23 +173,26 @@ function animate() {
   if (!engineOn) {
     if (keyboard.down("home")) engineOn = true;
   } else {
-    if (keyboard.down("home")) engineOn = false;
+    if (keyboard.down("home")){
+    	engineOn = false;
+      speed = 0;
+     }
   }
 
   if (engineOn) {
-    if (keyboard.pressed("W")) {
+    if (keyboard.pressed("up")) {
       if (speed <= 30) speed = speed + dt * 50;
     }
-    if (keyboard.pressed("S")) {
+    if (keyboard.pressed("down")) {
       if (speed >= 1) {
         speed = speed - dt * 50;
       }
       if (speed < 1) speed = 0;
     }
-    if (keyboard.pressed("A")) turnangle = -0.6;
-    if (keyboard.up("A")) turnangle = 0;
-    if (keyboard.pressed("D")) turnangle = 0.6;
-    if (keyboard.up("D")) turnangle = 0;
+    if (keyboard.pressed("left")) turnangle = -0.6;
+    if (keyboard.up("left")) turnangle = 0;
+    if (keyboard.pressed("right")) turnangle = 0.6;
+    if (keyboard.up("right")) turnangle = 0;
     if (keyboard.pressed("space")) {
       brakeOn = true;
       speed = 0;
@@ -230,4 +233,3 @@ window.focus();
 </body>
 
 </html>
-
