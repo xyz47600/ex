@@ -250,7 +250,10 @@ function onWindowResize() {
 https: //jsfiddle.net/xyz47600/7o72y4jf/6/#run
   function computeForce() {
 
-    if (jump && pos.y <= height(pos.x) + ballR) vel.add(new THREE.Vector3(0, 100, 0));
+    if (jump && pos.y <= height(pos.x) + ballR){
+	    vel.add(new THREE.Vector3(0, 100, 0));
+	    jumpsound.play();
+    }
 
 
 
@@ -342,7 +345,7 @@ function animate() {
   }
   if (keyboard.down("space")){
   	jump = true;
-    jumpsound.play();
+    
   }
   if (keyboard.up("space")){
   	jump = false;
